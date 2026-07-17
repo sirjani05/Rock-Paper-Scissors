@@ -1,0 +1,215 @@
+    * {
+      box-sizing: border-box;
+      transition: all cubic-bezier(0.3, 0, 0.3, 1) ease-in-out;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      background-color: black;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      justify-content: center;
+      overflow-x: hidden;
+    }
+
+    button {
+      cursor: pointer;
+      background: linear-gradient(145deg, #778899, #5f6f7f);
+      color: white;
+      border: 2px solid rgba(255, 255, 255, 0.12);
+      border-radius: 50%;
+      width: clamp(84px, 16vw, 140px);
+      max-width: 140px;
+      aspect-ratio: 1;
+      font-size: clamp(2rem, 4vw, 5rem);
+      padding: clamp(0.75rem, 2vw, 2rem);
+      margin: 0;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
+      transform: translateY(0);
+    }
+
+    button:hover {
+      transform: translateY(-4px) scale(1.03);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
+      background: linear-gradient(145deg, #8fa0b3, #6c7b8a);
+    }
+
+    button:active {
+      transform: scale(0.96);
+    }
+
+    .score-reset:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .move-button.selected {
+      animation: selectedPulse 0.35s ease forwards;
+    }
+
+    @keyframes selectedPulse {
+      0% {
+        transform: scale(0.96);
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
+      }
+
+      50% {
+        transform: scale(1.06);
+        box-shadow: 0 14px 28px rgba(0, 0, 0, 0.38);
+      }
+
+      100% {
+        transform: scale(1);
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
+      }
+    }
+
+    h2 {
+      color: white;
+      font-size: clamp(1.5rem, 3vw, 3rem);
+      margin: 0;
+      display: inline-block;
+    }
+
+    .score-reset {
+      border-radius: 999px;
+      border: none;
+      padding: 0.7rem 1rem;
+      margin-left: 1rem;
+      font-size: clamp(0.85rem, 1.8vw, 0.95rem);
+      background: linear-gradient(145deg, #778899, #5f6f7f);
+      color: aliceblue;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.24);
+      min-height: 2.5rem;
+      line-height: 1;
+      width: auto;
+      aspect-ratio: auto;
+      border-radius: 999px;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .content {
+      width: min(100%, 900px);
+      padding-top: 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .playgame {
+      width: min(100%, 900px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding: 0 1rem;
+      min-width: 0;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.72);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      z-index: 1000;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal-card {
+      background: linear-gradient(145deg, #1f2937, #111827);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 1.25rem;
+      padding: 1.5rem;
+      width: min(100%, 420px);
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+      text-align: center;
+    }
+
+    .modal-title {
+      margin: 0 0 0.6rem;
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .modal-text {
+      margin: 0 0 1rem;
+      line-height: 1.6;
+      color: #e5e7eb;
+      white-space: pre-line;
+      font-size: 0.95rem;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .modal-close {
+      border: none;
+      border-radius: 999px;
+      padding: 0.6rem 0.95rem;
+      background: linear-gradient(145deg, #778899, #5f6f7f);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+      min-height: 2.2rem;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 1.25rem 0.75rem;
+        justify-content: flex-start;
+      }
+
+      .content {
+        padding-top: 0.5rem;
+        gap: 0.75rem;
+        width: 100%;
+      }
+
+      .score-reset {
+        width: auto;
+        margin-left: 0;
+        padding: 0.7rem 0.95rem;
+        min-height: 2.3rem;
+      }
+
+      .playgame {
+        gap: 0.6rem;
+        padding: 0;
+        width: 100%;
+      }
+
+      button {
+        width: clamp(74px, 27vw, 98px);
+        max-width: 98px;
+        font-size: clamp(1.45rem, 6vw, 2.35rem);
+      }
+    }
+
+    @media (min-width: 601px) {
+
+      .content,
+      .playgame {
+        width: min(100%, 960px);
+      }
+    }
