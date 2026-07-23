@@ -658,11 +658,7 @@ function playGame(playerMove) {
   const moveButtons = document.querySelectorAll('.move-button');
   moveButtons.forEach((button) => button.classList.remove('selected'));
 
-  const chosenButton = Array.from(moveButtons).find((button) => button.textContent.trim() === {
-    rock: '👊',
-    paper: '✋',
-    scissors: '✌️'
-  }[playerMove]);
+  const chosenButton = Array.from(moveButtons).find((button) => button.textContent.trim() === playerMove);
 
   if (chosenButton) {
     chosenButton.classList.add('selected');
