@@ -19,51 +19,89 @@ function playGame(playerMove) {
   }
 
   const computerMove = pickComputerMove();
+  const playerIcon = document.getElementById('playerIcon');
+  const computerIcon = document.getElementById('computerIcon');
+  const playerSlot = document.querySelector('.player-slot');
+  const computerSlot = document.querySelector('.computer-slot');
 
-  let result = '';
+  // Reset previous effects
+  playerSlot.classList.remove('winner', 'loser', 'tie');
+  computerSlot.classList.remove('winner', 'loser', 'tie');
+  document.body.classList.remove('shake');
 
-  if (playerMove === '✌️') {
-    if (computerMove === '👊') {
-      result = 'You lose.';
-    } else if (computerMove === '✋') {
-      result = 'You win.';
-    } else if (computerMove === '✌️') {
-      result = 'Tie.';
+  // Start countdown animation with bouncing fists
+  playerIcon.textContent = '👊';
+  computerIcon.textContent = '👊';
+  playerIcon.classList.remove('reveal');
+  computerIcon.classList.remove('reveal');
+  computerIcon.classList.remove('thinking');
+  playerIcon.classList.add('bouncing');
+  computerIcon.classList.add('bouncing');
+
+  // After 3 bounces (1.5s), reveal the actual moves
+  setTimeout(() => {
+    playerIcon.classList.remove('bouncing');
+    computerIcon.classList.remove('bouncing');
+    
+    playerIcon.textContent = playerMove;
+    computerIcon.textContent = computerMove;
+    
+    playerIcon.classList.add('reveal');
+    computerIcon.classList.add('reveal');
+
+    // Determine result
+    let result = '';
+
+    if (playerMove === '✌️') {
+      if (computerMove === '👊') {
+        result = 'You lose.';
+      } else if (computerMove === '✋') {
+        result = 'You win.';
+      } else if (computerMove === '✌️') {
+        result = 'Tie.';
+      }
+    } else if (playerMove === '✋') {
+      if (computerMove === '👊') {
+        result = 'You win.';
+      } else if (computerMove === '✋') {
+        result = 'Tie.';
+      } else if (computerMove === '✌️') {
+        result = 'You lose.';
+      }
+    } else if (playerMove === '👊') {
+      if (computerMove === '👊') {
+        result = 'Tie.';
+      } else if (computerMove === '✋') {
+        result = 'You lose.';
+      } else if (computerMove === '✌️') {
+        result = 'You win.';
+      }
     }
 
-
-  } else if (playerMove === '✋') {
-    if (computerMove === '👊') {
-      result = 'You win.';
-    } else if (computerMove === '✋') {
-      result = 'Tie.';
-    } else if (computerMove === '✌️') {
-      result = 'You lose.';
+    // Apply visual effects based on result
+    if (result === 'You win.') {
+      playerSlot.classList.add('winner');
+      score.wins += 1;
+    } else if (result === 'You lose.') {
+      playerSlot.classList.add('loser');
+      computerSlot.classList.add('winner');
+      document.body.classList.add('shake');
+      score.loses += 1;
+    } else if (result === 'Tie.') {
+      playerSlot.classList.add('tie');
+      computerSlot.classList.add('tie');
+      score.ties += 1;
     }
 
+    localStorage.setItem('score', JSON.stringify(score));
 
-  } else if (playerMove === '👊') {
-    if (computerMove === '👊') {
-      result = 'Tie.';
-    } else if (computerMove === '✋') {
-      result = 'You lose.';
-    } else if (computerMove === '✌️') {
-      result = 'You win.';
-    }
-  }
+    // Show modal after reveal animation
+    setTimeout(() => {
+      document.getElementById('modalText').textContent = `You ${playerMove} - ${computerMove} Computer. ${result}\nWins: ${score.wins}  Loses: ${score.loses}  Ties: ${score.ties}`;
+      document.getElementById('resultModal').classList.add('show');
+    }, 400);
 
-  if (result === 'You win.') {
-    score.wins += 1
-  } else if (result === 'You lose.') {
-    score.loses += 1
-  } else if (result === 'Tie.') {
-    score.ties += 1
-  }
-
-  localStorage.setItem('score', JSON.stringify(score));
-
-  document.getElementById('modalText').textContent = `You ${playerMove} - ${computerMove} Computer. ${result}\nWins: ${score.wins}  Loses: ${score.loses}  Ties: ${score.ties}`;
-  document.getElementById('resultModal').classList.add('show');
+  }, 1500);
 
 };
 
