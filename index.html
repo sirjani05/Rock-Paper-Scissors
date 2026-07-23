@@ -4,13 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="styles.css">
-  <title>Rock Paper Scissors</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#302b63">
+  <title>Rock Paper Scissors - GOTY Edition</title>
 </head>
 <body>
   <div class="content">
     <h2>Rock Paper Scissors</h2>
 
     <div class="settings-panel">
+      <div class="mode-selector">
+        <label for="gameMode">Game Mode:</label>
+        <select id="gameMode" class="mode-select">
+          <option value="classic">Classic 3-Way</option>
+          <option value="rpsls">RPSLS (Lizard Spock)</option>
+          <option value="bossrush">Boss Rush Campaign</option>
+          <option value="local2p">Local 2-Player</option>
+        </select>
+      </div>
+
       <div class="difficulty-selector">
         <label for="difficulty">Difficulty:</label>
         <select id="difficulty" class="difficulty-select">
@@ -25,15 +37,30 @@
         <input type="checkbox" id="timerToggle" class="timer-checkbox">
       </div>
 
+      <button class="stats-btn" onclick="showStatsModal()">📊 Stats</button>
+      <button class="achievements-btn" onclick="showAchievementsModal()">🏆 Achievements</button>
+      <button class="leaderboard-btn" onclick="showLeaderboardModal()">🏆 Leaderboard</button>
+
       <button class="score-reset" onclick="
       score.wins = 0;
       score.loses = 0;
       score.ties = 0;
       score.streak = 0;
+      score.xp = 0;
+      score.level = 1;
       localStorage.setItem('score', JSON.stringify(score));
       updateStreakDisplay();
+      updateXPDisplay();
     ">Reset Score</button>
     </div>
+  </div>
+
+  <div class="xp-display" id="xpDisplay">
+    <span class="xp-label">Level <span id="levelCount">1</span></span>
+    <div class="xp-bar">
+      <div class="xp-fill" id="xpFill"></div>
+    </div>
+    <span class="xp-text" id="xpText">0 / 100 XP</span>
   </div>
 
   <div class="streak-display" id="streakDisplay">
@@ -45,6 +72,11 @@
   <div class="timer-display" id="timerDisplay" style="display: none;">
     <span class="timer-label">Time:</span>
     <span class="timer-count" id="timerCount">3</span>
+  </div>
+
+  <div class="boss-info" id="bossInfo" style="display: none;">
+    <span class="boss-name" id="bossName">Boss 1</span>
+    <span class="boss-health" id="bossHealth">❤️❤️❤️</span>
   </div>
 
   <div class="arena" id="arena">
@@ -59,28 +91,90 @@
     </div>
   </div>
 
-  <div class="playgame">
-    <button class="move-button" onclick="
-    playGame('👊');
-  ">👊</button>
-
-
-    <button class="move-button" onclick="
-    playGame('✋');
-  ">✋</button>
-
-
-    <button class="move-button" onclick="
-    playGame('✌️');
-  ">✌️</button>
-
+  <div class="playgame" id="playgame">
+    <button class="move-button" onclick="playGame('👊')">👊</button>
+    <button class="move-button" onclick="playGame('✋')">✋</button>
+    <button class="move-button" onclick="playGame('✌️')">✌️</button>
   </div>
+
+  <div class="playgame rpsls-mode" id="rpslsPlaygame" style="display: none;">
+    <button class="move-button rpsls-btn" onclick="playGame('👊')">👊</button>
+    <button class="move-button rpsls-btn" onclick="playGame('✋')">✋</button>
+    <button class="move-button rpsls-btn" onclick="playGame('✌️')">✌️</button>
+    <button class="move-button rpsls-btn" onclick="playGame('🦎')">🦎</button>
+    <button class="move-button rpsls-btn" onclick="playGame('🖖')">🖖</button>
+  </div>
+
+  <div class="local-2p-controls" id="local2pControls" style="display: none;">
+    <p class="controls-hint">Player 1: A/S/D | Player 2: J/K/L</p>
+  </div>
+
+  <canvas id="particleCanvas" class="particle-canvas"></canvas>
 
   <div class="modal-overlay" id="resultModal">
     <div class="modal-card">
       <h3 class="modal-title">Round Result</h3>
       <p class="modal-text" id="modalText"></p>
       <button class="modal-close" id="modalCloseBtn" onclick="closeModal()">Play Again</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="statsModal">
+    <div class="modal-card stats-modal">
+      <h3 class="modal-title">📊 Statistics</h3>
+      <div class="stats-content">
+        <div class="stat-row">
+          <span class="stat-label">Total Games:</span>
+          <span class="stat-value" id="totalGames">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Win Rate:</span>
+          <span class="stat-value" id="winRate">0%</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Best Streak:</span>
+          <span class="stat-value" id="bestStreak">0</span>
+        </div>
+        <div class="pick-distribution">
+          <h4>Pick Distribution</h4>
+          <div class="dist-bar">
+            <span class="dist-label">👊 Rock</span>
+            <div class="dist-track"><div class="dist-fill" id="rockDist" style="width: 33%"></div></div>
+            <span class="dist-percent" id="rockPercent">33%</span>
+          </div>
+          <div class="dist-bar">
+            <span class="dist-label">✋ Paper</span>
+            <div class="dist-track"><div class="dist-fill" id="paperDist" style="width: 33%"></div></div>
+            <span class="dist-percent" id="paperPercent">33%</span>
+          </div>
+          <div class="dist-bar">
+            <span class="dist-label">✌️ Scissors</span>
+            <div class="dist-track"><div class="dist-fill" id="scissorsDist" style="width: 34%"></div></div>
+            <span class="dist-percent" id="scissorsPercent">34%</span>
+          </div>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeStatsModal()">Close</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="achievementsModal">
+    <div class="modal-card achievements-modal">
+      <h3 class="modal-title">🏆 Achievements</h3>
+      <div class="achievements-grid" id="achievementsGrid">
+        <!-- Achievements will be populated by JS -->
+      </div>
+      <button class="modal-close" onclick="closeAchievementsModal()">Close</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="leaderboardModal">
+    <div class="modal-card leaderboard-modal">
+      <h3 class="modal-title">🏆 Leaderboard</h3>
+      <div class="leaderboard-content" id="leaderboardContent">
+        <!-- Leaderboard will be populated by JS -->
+      </div>
+      <button class="modal-close" onclick="closeLeaderboardModal()">Close</button>
     </div>
   </div>
 
