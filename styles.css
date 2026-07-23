@@ -131,6 +131,139 @@ h2 {
   margin-bottom: 2rem;
 }
 
+.settings-panel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  padding: 1rem 1.5rem;
+}
+
+.difficulty-selector,
+.timer-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.difficulty-selector label,
+.timer-toggle label {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+  white-space: nowrap;
+}
+
+.difficulty-select {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  color: white;
+  font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+  cursor: pointer;
+  outline: none;
+}
+
+.difficulty-select:hover {
+  border-color: rgba(0, 255, 255, 0.5);
+}
+
+.difficulty-select option {
+  background: #1a1a2e;
+  color: white;
+}
+
+.timer-checkbox {
+  width: 1.25rem;
+  height: 1.25rem;
+  cursor: pointer;
+  accent-color: #00ffff;
+}
+
+.streak-display {
+  width: min(100%, 900px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+}
+
+.streak-label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: clamp(0.9rem, 1.8vw, 1rem);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.streak-count {
+  color: #00ff88;
+  font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+  font-weight: 700;
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+.streak-multiplier {
+  color: #ff00ff;
+  font-size: clamp(0.85rem, 1.5vw, 0.95rem);
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.streak-multiplier.visible {
+  opacity: 1;
+}
+
+.timer-display {
+  width: min(100%, 900px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 68, 68, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  border-radius: 0.75rem;
+}
+
+.timer-label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: clamp(0.9rem, 1.8vw, 1rem);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.timer-count {
+  color: #ff4444;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 700;
+  text-shadow: 0 0 15px rgba(255, 68, 68, 0.6);
+  animation: timerPulse 1s ease-in-out infinite;
+}
+
+@keyframes timerPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
 .playgame {
   width: min(100%, 900px);
   display: flex;
