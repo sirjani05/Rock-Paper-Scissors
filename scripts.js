@@ -4,14 +4,6 @@ const score = JSON.parse(localStorage.getItem('score')) || {
   ties: 0
 };
 
-const modalCloseBtn = document.querySelector('.modal-close'); 
-
-if (result === 'You win') {
-  modalCloseBtn.textContent = 'Continue';
-} else {
-  modalCloseBtn.textContent = 'Play Again';
-};
-
 function playGame(playerMove) {
   const moveButtons = document.querySelectorAll('.move-button');
   moveButtons.forEach((button) => button.classList.remove('selected'));
@@ -106,6 +98,15 @@ function playGame(playerMove) {
     // Show modal after reveal animation
     setTimeout(() => {
       document.getElementById('modalText').textContent = `You ${playerMove} - ${computerMove} Computer. ${result}\nWins: ${score.wins}  Loses: ${score.loses}  Ties: ${score.ties}`;
+      
+      // Update modal button text based on result
+      const modalCloseBtn = document.getElementById('modalCloseBtn');
+      if (result === 'You win.') {
+        modalCloseBtn.textContent = 'Continue';
+      } else {
+        modalCloseBtn.textContent = 'Play Again';
+      }
+      
       document.getElementById('resultModal').classList.add('show');
     }, 400);
 
