@@ -4,6 +4,14 @@ const score = JSON.parse(localStorage.getItem('score')) || {
   ties: 0
 };
 
+const modalCloseBtn = document.querySelector('.modal-close'); 
+
+if (result === 'You win') {
+  modalCloseBtn.textContent = 'Continue';
+} else {
+  modalCloseBtn.textContent = 'Play Again';
+};
+
 function playGame(playerMove) {
   const moveButtons = document.querySelectorAll('.move-button');
   moveButtons.forEach((button) => button.classList.remove('selected'));
