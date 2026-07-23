@@ -25,6 +25,8 @@ let player1Move = null;
 let player2Move = null;
 // Game mode
 let gameMode = 'classic';
+// Round processing flag
+let isProcessingRound = false;
 
 // Sound Manager using Web Audio API
 class SoundManager {
@@ -131,9 +133,16 @@ function registerServiceWorker() {
 
 function setupTimerToggle() {
   const timerToggle = document.getElementById('timerToggle');
+  if (!timerToggle) {
+    console.warn('Timer toggle element not found');
+    return;
+  }
+  
   timerToggle.addEventListener('change', (e) => {
     const timerDisplay = document.getElementById('timerDisplay');
-    timerDisplay.style.display = e.target.checked ? 'flex' : 'none';
+    if (timerDisplay) {
+      timerDisplay.style.display = e.target.checked ? 'flex' : 'none';
+    }
     if (e.target.checked && !timerActive) {
       startTimer();
     } else if (!e.target.checked && timerInterval) {
@@ -146,6 +155,11 @@ function setupTimerToggle() {
 
 function setupModeSelector() {
   const modeSelect = document.getElementById('gameMode');
+  if (!modeSelect) {
+    console.warn('Mode selector element not found');
+    return;
+  }
+  
   modeSelect.addEventListener('change', (e) => {
     gameMode = e.target.value;
     const classicPlay = document.getElementById('playgame');
@@ -154,38 +168,48 @@ function setupModeSelector() {
     const bossInfo = document.getElementById('bossInfo');
     const computerLabel = document.querySelector('.computer-slot .arena-label');
     
+    // Reset round processing state when switching modes
+    isProcessingRound = false;
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      timerActive = false;
+    }
+    
     // Hide all mode-specific elements
-    classicPlay.style.display = 'none';
-    rpslsPlay.style.display = 'none';
-    local2pControls.style.display = 'none';
-    bossInfo.style.display = 'none';
+    if (classicPlay) classicPlay.style.display = 'none';
+    if (rpslsPlay) rpslsPlay.style.display = 'none';
+    if (local2pControls) local2pControls.style.display = 'none';
+    if (bossInfo) bossInfo.style.display = 'none';
     
     switch(gameMode) {
       case 'classic':
-        classicPlay.style.display = 'flex';
-        computerLabel.textContent = 'Computer';
+        if (classicPlay) classicPlay.style.display = 'flex';
+        if (computerLabel) computerLabel.textContent = 'Computer';
         local2PMode = false;
         break;
       case 'rpsls':
-        rpslsPlay.style.display = 'flex';
-        computerLabel.textContent = 'Computer';
+        if (rpslsPlay) rpslsPlay.style.display = 'flex';
+        if (computerLabel) computerLabel.textContent = 'Computer';
         local2PMode = false;
         break;
       case 'bossrush':
-        classicPlay.style.display = 'flex';
-        computerLabel.textContent = 'Boss';
-        bossInfo.style.display = 'flex';
+        if (classicPlay) classicPlay.style.display = 'flex';
+        if (computerLabel) computerLabel.textContent = 'Boss';
+        if (bossInfo) bossInfo.style.display = 'flex';
         local2PMode = false;
         currentBoss = 0;
         bossHealth = 3;
         updateBossDisplay();
         break;
       case 'local2p':
-        classicPlay.style.display = 'flex';
-        local2pControls.style.display = 'block';
-        computerLabel.textContent = 'Player 2';
+        if (classicPlay) classicPlay.style.display = 'flex';
+        if (local2pControls) local2pControls.style.display = 'block';
+        if (computerLabel) computerLabel.textContent = 'Player 2';
         local2PMode = true;
         break;
+      default:
+        console.warn('Unknown game mode:', gameMode);
     }
   });
 }
@@ -298,6 +322,11 @@ function updateStreakDisplay() {
   const streakCount = document.getElementById('streakCount');
   const streakMultiplier = document.getElementById('streakMultiplier');
   
+  if (!streakCount || !streakMultiplier) {
+    console.warn('Streak display elements not found');
+    return;
+  }
+  
   streakCount.textContent = score.streak;
   
   if (score.streak >= 3) {
@@ -314,6 +343,11 @@ function updateXPDisplay() {
   const levelCount = document.getElementById('levelCount');
   const xpFill = document.getElementById('xpFill');
   const xpText = document.getElementById('xpText');
+  
+  if (!levelCount || !xpFill || !xpText) {
+    console.warn('XP display elements not found');
+    return;
+  }
   
   levelCount.textContent = score.level;
   
@@ -349,7 +383,17 @@ let particles = [];
 
 function setupParticleCanvas() {
   particleCanvas = document.getElementById('particleCanvas');
+  if (!particleCanvas) {
+    console.warn('Particle canvas element not found');
+    return;
+  }
+  
   particleCtx = particleCanvas.getContext('2d');
+  if (!particleCtx) {
+    console.warn('Could not get particle canvas context');
+    return;
+  }
+  
   resizeParticleCanvas();
   window.addEventListener('resize', resizeParticleCanvas);
   animateParticles();
@@ -448,6 +492,11 @@ function showAchievementNotification(achievement) {
 
 function renderAchievements() {
   const grid = document.getElementById('achievementsGrid');
+  if (!grid) {
+    console.warn('Achievements grid element not found');
+    return;
+  }
+  
   grid.innerHTML = '';
   
   achievements.forEach(achievement => {
@@ -509,6 +558,11 @@ function updateBossDisplay() {
   const bossName = document.getElementById('bossName');
   const bossHealth = document.getElementById('bossHealth');
   
+  if (!bossName || !bossHealth) {
+    console.warn('Boss display elements not found');
+    return;
+  }
+  
   if (currentBoss < bosses.length) {
     bossName.textContent = bosses[currentBoss].name;
     bossHealth.textContent = '❤️'.repeat(bossHealth);
@@ -538,12 +592,29 @@ function handleBossResult(result) {
 // Modal Functions
 function showStatsModal() {
   soundManager.playClick();
+  
+  const totalGamesEl = document.getElementById('totalGames');
+  const winRateEl = document.getElementById('winRate');
+  const bestStreakEl = document.getElementById('bestStreak');
+  const rockDistEl = document.getElementById('rockDist');
+  const rockPercentEl = document.getElementById('rockPercent');
+  const paperDistEl = document.getElementById('paperDist');
+  const paperPercentEl = document.getElementById('paperPercent');
+  const scissorsDistEl = document.getElementById('scissorsDist');
+  const scissorsPercentEl = document.getElementById('scissorsPercent');
+  const statsModal = document.getElementById('statsModal');
+  
+  if (!totalGamesEl || !winRateEl || !bestStreakEl || !statsModal) {
+    console.warn('Stats modal elements not found');
+    return;
+  }
+  
   const totalGames = score.wins + score.loses + score.ties;
   const winRate = totalGames > 0 ? Math.round((score.wins / totalGames) * 100) : 0;
   
-  document.getElementById('totalGames').textContent = totalGames;
-  document.getElementById('winRate').textContent = `${winRate}%`;
-  document.getElementById('bestStreak').textContent = score.bestStreak;
+  totalGamesEl.textContent = totalGames;
+  winRateEl.textContent = `${winRate}%`;
+  bestStreakEl.textContent = score.bestStreak;
   
   // Update pick distribution
   const totalPicks = score.pickCounts['👊'] + score.pickCounts['✋'] + score.pickCounts['✌️'];
@@ -551,54 +622,76 @@ function showStatsModal() {
   const paperPercent = totalPicks > 0 ? Math.round((score.pickCounts['✋'] / totalPicks) * 100) : 33;
   const scissorsPercent = totalPicks > 0 ? Math.round((score.pickCounts['✌️'] / totalPicks) * 100) : 34;
   
-  document.getElementById('rockDist').style.width = `${rockPercent}%`;
-  document.getElementById('rockPercent').textContent = `${rockPercent}%`;
-  document.getElementById('paperDist').style.width = `${paperPercent}%`;
-  document.getElementById('paperPercent').textContent = `${paperPercent}%`;
-  document.getElementById('scissorsDist').style.width = `${scissorsPercent}%`;
-  document.getElementById('scissorsPercent').textContent = `${scissorsPercent}%`;
+  if (rockDistEl) rockDistEl.style.width = `${rockPercent}%`;
+  if (rockPercentEl) rockPercentEl.textContent = `${rockPercent}%`;
+  if (paperDistEl) paperDistEl.style.width = `${paperPercent}%`;
+  if (paperPercentEl) paperPercentEl.textContent = `${paperPercent}%`;
+  if (scissorsDistEl) scissorsDistEl.style.width = `${scissorsPercent}%`;
+  if (scissorsPercentEl) scissorsPercentEl.textContent = `${scissorsPercent}%`;
   
-  document.getElementById('statsModal').classList.add('show');
+  statsModal.classList.add('show');
 }
 
 function closeStatsModal() {
-  document.getElementById('statsModal').classList.remove('show');
+  const statsModal = document.getElementById('statsModal');
+  if (statsModal) {
+    statsModal.classList.remove('show');
+  }
 }
 
 function showAchievementsModal() {
   soundManager.playClick();
   renderAchievements();
-  document.getElementById('achievementsModal').classList.add('show');
+  const achievementsModal = document.getElementById('achievementsModal');
+  if (achievementsModal) {
+    achievementsModal.classList.add('show');
+  }
 }
 
 function closeAchievementsModal() {
-  document.getElementById('achievementsModal').classList.remove('show');
+  const achievementsModal = document.getElementById('achievementsModal');
+  if (achievementsModal) {
+    achievementsModal.classList.remove('show');
+  }
 }
 
 function showLeaderboardModal() {
   soundManager.playClick();
   renderLeaderboard();
-  document.getElementById('leaderboardModal').classList.add('show');
+  const leaderboardModal = document.getElementById('leaderboardModal');
+  if (leaderboardModal) {
+    leaderboardModal.classList.add('show');
+  }
 }
 
 function closeLeaderboardModal() {
-  document.getElementById('leaderboardModal').classList.remove('show');
+  const leaderboardModal = document.getElementById('leaderboardModal');
+  if (leaderboardModal) {
+    leaderboardModal.classList.remove('show');
+  }
 }
 
 function startTimer() {
-  if (!document.getElementById('timerToggle').checked) return;
+  const timerToggle = document.getElementById('timerToggle');
+  if (!timerToggle || !timerToggle.checked) return;
   
   timerActive = true;
   let timeLeft = 3;
   const timerCount = document.getElementById('timerCount');
-  timerCount.textContent = timeLeft;
+  if (timerCount) {
+    timerCount.textContent = timeLeft;
+  }
   
   timerInterval = setInterval(() => {
     timeLeft--;
-    timerCount.textContent = timeLeft;
+    if (timerCount) {
+      timerCount.textContent = timeLeft;
+    }
+    soundManager.playTick();
     
     if (timeLeft <= 0) {
       clearInterval(timerInterval);
+      timerInterval = null;
       timerActive = false;
       handleTimeout();
     }
